@@ -1,0 +1,94 @@
+rules Prog ::= Block;
+
+rules Block ::= Declarations Program_body;
+
+rules Declarations ::= Declaration SEMICOLON Declarations
+             |.;
+
+rules Declaration ::= Var_declaration
+             | Fun_declaration;
+
+rules Var_declaration ::= VAR ID Array_dimensions COLON Type;
+
+rules Type ::= INT
+      | REAL
+      | BOOL. 
+
+rules Array_dimensions ::= SLPAR Expr SRPAR Array_dimensions
+             |.
+
+rules Fun_declaration ::= FUN ID Param_list COLON Type  
+                                            CLPAR Fun_block CRPAR.
+
+rules Fun_block ::= Declarations Fun_body. 
+
+rules Param_list ::= LPAR Parameters RPAR.
+
+rules Parameters ::= Basic_declaration More_parameters
+            |.
+
+rules More_parameters ::= COMMA  Basic_declaration More_parameters
+            |.
+
+rules Basic_declaration ::= ID Basic_array_dimensions COLON Type.
+
+rules Basic_array_dimensions ::= SLPAR SRPAR Basic_array_dimensions
+             |.
+
+rules Program_body ::= BEGIN Prog_stmts END.
+
+rules Fun_body ::= BEGIN Prog_stmts RETURN Expr SEMICOLON END.
+
+rules Prog_stmts ::= Prog_stmt SEMICOLON Prog_stmts
+            |.                         
+                                        
+rules Prog_stmt ::= IF Expr THEN Prog_stmt ELSE Prog_stmt
+           | WHILE Expr DO Prog_stmt
+           | READ Identifier
+           | Identifier ASSIGN Expr
+           | PRINT Expr
+           | CLPAR Block CRPAR.
+
+rules Identifier ::= ID Array_dimensions.
+
+rules Expr ::=  Expr OR Bint_term
+       | Bint_term.
+
+rules Bint_term ::= Bint_term AND Bint_factor
+           | Bint_factor.
+
+rules Bint_factor ::= NOT Bint_factor
+             | Int_expr Compare_op Int_expr
+             | Int_expr.
+
+rules Compare_op ::= EQUAL | LT | GT | LE |GE.
+
+rules Int_expr ::= Int_expr Addop Int_term
+          | Int_term.
+
+rules Addop ::= ADD | SUB.
+
+rules Int_term ::= Int_term Mulop Int_factor
+          | Int_factor.
+
+rules Mulop ::= MUL | DIV.
+
+rules Int_factor ::= LPAR Expr RPAR
+            | SIZE LPAR ID Basic_array_dimensions RPAR
+            | FLOAT LPAR Expr RPAR
+            | FLOOR LPAR Expr RPAR
+            | CEIL LPAR Expr RPAR
+            | ID Modifier_list
+            | IVAL
+            | RVAL
+            | BVAL
+            | SUB Int_factor.
+
+rules Modifier_list ::= LPAR Arguments RPAR
+           | Array_dimensions.
+
+rules Arguments ::= Expr More_arguments
+           |.
+
+rules More_arguments ::= COMMA Expr More_arguments
+           |.
