@@ -2,93 +2,100 @@ rules Prog ::= Block;
 
 rules Block ::= Declarations Program_body;
 
-rules Declarations ::= Declaration SEMICOLON Declarations
-             |.;
+rules Declarations ::= Declaration ";" Declarations
+             |"";
 
 rules Declaration ::= Var_declaration
              | Fun_declaration;
 
-rules Var_declaration ::= VAR ID Array_dimensions COLON Type;
+rules Var_declaration ::= "var" Ident Array_dimensions ":" Type;
 
-rules Type ::= INT
-      | REAL
-      | BOOL. 
+rules Type ::= "int"
+      | "real"
+      | "bool";
 
-rules Array_dimensions ::= SLPAR Expr SRPAR Array_dimensions
-             |.
+rules Array_dimensions ::= "[" Expr "]" Array_dimensions
+             |"";
 
-rules Fun_declaration ::= FUN ID Param_list COLON Type  
-                                            CLPAR Fun_block CRPAR.
+rules Fun_declaration ::= "fun" Ident Param_list ":" Type  
+                                            "{" Fun_block "}";
 
-rules Fun_block ::= Declarations Fun_body. 
+rules Fun_block ::= Declarations Fun_body; 
 
-rules Param_list ::= LPAR Parameters RPAR.
+rules Param_list ::= "(" Parameters ")";
 
 rules Parameters ::= Basic_declaration More_parameters
-            |.
+            |"";
 
-rules More_parameters ::= COMMA  Basic_declaration More_parameters
-            |.
+rules More_parameters ::= ","  Basic_declaration More_parameters
+            |"";
 
-rules Basic_declaration ::= ID Basic_array_dimensions COLON Type.
+rules Basic_declaration ::= Ident Basic_array_dimensions ":" Type;
 
-rules Basic_array_dimensions ::= SLPAR SRPAR Basic_array_dimensions
-             |.
+rules Basic_array_dimensions ::= "[" "]" Basic_array_dimensions
+             |"";
 
-rules Program_body ::= BEGIN Prog_stmts END.
+rules Program_body ::= "begin" Prog_stmts "end";
 
-rules Fun_body ::= BEGIN Prog_stmts RETURN Expr SEMICOLON END.
+rules Fun_body ::= "begin" Prog_stmts "return" Expr ";" "end";
 
-rules Prog_stmts ::= Prog_stmt SEMICOLON Prog_stmts
-            |.                         
+rules Prog_stmts ::= Prog_stmt ";" Prog_stmts
+            |"";                        
                                         
-rules Prog_stmt ::= IF Expr THEN Prog_stmt ELSE Prog_stmt
-           | WHILE Expr DO Prog_stmt
-           | READ Identifier
-           | Identifier ASSIGN Expr
-           | PRINT Expr
-           | CLPAR Block CRPAR.
+rules Prog_stmt ::= "if" Expr "then" Prog_stmt "else" Prog_stmt
+           | "while" Expr "do" Prog_stmt
+           | "read" Identifier
+           | Identifier ":=" Expr
+           | "print" Expr
+           | "{" Block "}";
 
-rules Identifier ::= ID Array_dimensions.
+rules Identifier ::= Ident Array_dimensions;
 
-rules Expr ::=  Expr OR Bint_term
-       | Bint_term.
+rules Expr ::=  Expr "||" Bint_term
+       | Bint_term;
 
-rules Bint_term ::= Bint_term AND Bint_factor
-           | Bint_factor.
+rules Bint_term ::= Bint_term "&&" Bint_factor
+           | Bint_factor;
 
-rules Bint_factor ::= NOT Bint_factor
+rules Bint_factor ::= "not" Bint_factor
              | Int_expr Compare_op Int_expr
-             | Int_expr.
+             | Int_expr;
 
-rules Compare_op ::= EQUAL | LT | GT | LE |GE.
+rules Compare_op ::= "=" | "<" | ">" | "=<" |">=";
 
 rules Int_expr ::= Int_expr Addop Int_term
-          | Int_term.
+          | Int_term;
 
-rules Addop ::= ADD | SUB.
+rules Addop ::= "+" | "-";
 
 rules Int_term ::= Int_term Mulop Int_factor
-          | Int_factor.
+          | Int_factor;
 
-rules Mulop ::= MUL | DIV.
+rules Mulop ::= "*" | "/";
 
-rules Int_factor ::= LPAR Expr RPAR
-            | SIZE LPAR ID Basic_array_dimensions RPAR
-            | FLOAT LPAR Expr RPAR
-            | FLOOR LPAR Expr RPAR
-            | CEIL LPAR Expr RPAR
-            | ID Modifier_list
-            | IVAL
-            | RVAL
-            | BVAL
-            | SUB Int_factor.
+rules Int_factor ::= "(" Expr ")"
+            | "size" "(" Ident Basic_array_dimensions ")"
+            | "float" "(" Expr ")"
+            | "floor" "(" Expr ")"
+            | "ceil" "(" Expr ")"
+            | Ident Modifier_list
+            | Ival
+            | Rval
+            | Bval
+            | "-" Int_factor;
 
-rules Modifier_list ::= LPAR Arguments RPAR
-           | Array_dimensions.
+rules Modifier_list ::= "(" Arguments ")"
+           | Array_dimensions;
 
 rules Arguments ::= Expr More_arguments
-           |.
+           |"";
 
-rules More_arguments ::= COMMA Expr More_arguments
-           |.
+rules More_arguments ::= "," Expr More_arguments
+           |"";
+		   
+rules Bval ::= "true"
+	| "false";
+
+token Ival digit+ ;
+token Rval digit* '.' digit+;
+
