@@ -3,7 +3,7 @@ rules Prog ::= Block;
 rules Block ::= Declarations Program_body;
 
 rules Declarations ::= Declaration ";" Declarations
-             |"";
+             |;
 
 rules Declaration ::= Var_declaration
              | Fun_declaration;
@@ -15,7 +15,7 @@ rules Type ::= "int"
       | "bool";
 
 rules Array_dimensions ::= "[" Expr "]" Array_dimensions
-             |"";
+             |;
 
 rules Fun_declaration ::= "fun" Ident Param_list ":" Type  
                                             "{" Fun_block "}";
@@ -25,22 +25,22 @@ rules Fun_block ::= Declarations Fun_body;
 rules Param_list ::= "(" Parameters ")";
 
 rules Parameters ::= Basic_declaration More_parameters
-            |"";
+            |;
 
 rules More_parameters ::= ","  Basic_declaration More_parameters
-            |"";
+            |;
 
 rules Basic_declaration ::= Ident Basic_array_dimensions ":" Type;
 
 rules Basic_array_dimensions ::= "[" "]" Basic_array_dimensions
-             |"";
+             |;
 
 rules Program_body ::= "begin" Prog_stmts "end";
 
 rules Fun_body ::= "begin" Prog_stmts "return" Expr ";" "end";
 
 rules Prog_stmts ::= Prog_stmt ";" Prog_stmts
-            |"";                        
+            |;                        
                                         
 rules Prog_stmt ::= "if" Expr "then" Prog_stmt "else" Prog_stmt
            | "while" Expr "do" Prog_stmt
@@ -79,8 +79,6 @@ rules Int_factor ::= "(" Expr ")"
             | "floor" "(" Expr ")"
             | "ceil" "(" Expr ")"
             | Ident Modifier_list
-            | Ival
-            | Rval
             | Bval
             | "-" Int_factor;
 
@@ -88,14 +86,11 @@ rules Modifier_list ::= "(" Arguments ")"
            | Array_dimensions;
 
 rules Arguments ::= Expr More_arguments
-           |"";
+           |;
 
 rules More_arguments ::= "," Expr More_arguments
-           |"";
+           |;
 		   
 rules Bval ::= "true"
 	| "false";
-
-token Ival digit+ ;
-token Rval digit* '.' digit+;
 
