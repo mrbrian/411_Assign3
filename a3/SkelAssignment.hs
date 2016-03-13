@@ -47,7 +47,7 @@ transIdent x = case x of
   
 transProg :: Prog -> M_prog
 transProg x = case x of
-  ProgBlock block -> M_prog ([], [])
+  ProgBlock block -> M_prog (transBlock block)
   
 transBlock :: Block -> ([M_decl],[M_stmt])
 transBlock x = case x of
