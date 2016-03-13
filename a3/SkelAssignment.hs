@@ -161,7 +161,7 @@ transInt_expr x = case x of
   Int_expr1 intexpr addop intterm -> failure x
   Int_exprInt_term intterm -> failure x
   
-transAddop :: Addop -> Result
+transAddop :: Addop -> Expr
 transAddop x = case x of
   Addop1 -> failure x
   Addop2 -> failure x
@@ -179,13 +179,16 @@ transMulop x = case x of
 transInt_factor :: Int_factor -> M_expr
 transInt_factor x = case x of
   Int_factor1 expr -> transExpr expr
-  Int_factor2 ident basicarraydimensions -> transBasic_array_dimensions basicarraydimensions
-  Int_factor3 expr -> failure x
-  Int_factor4 expr -> failure x
-  Int_factor5 expr -> failure x
-  Int_factor6 ident modifierlist -> (M_operation,[M_expr])
+  -- size   ... returns the size of the array somehow??
+  Int_factor2 ident basicarraydimensions -> M_size(transIdent ident, transBasic_array_dimensions basicarraydimensions)
+  -- float
+  Int_factor3 expr -> M_rval 
+  -- floor
+  Int_factor4 expr -> M_floor 
+  Int_factor5 expr -> M_ceil
+  Int_factor6 ident modifierlist -> transIdent ident transModifier_list modifierlist
   Int_factorBval bval -> transBval bval
-  Int_factor7 intfactor -> transInt_factor intfactor
+  Int_factor7 intfactor -> M_app(M_mul, [M_ival -1, transInt_factor intfactor]
   
 transModifier_list :: Modifier_list -> [M_expr]
 transModifier_list x = case x of
