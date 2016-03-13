@@ -94,3 +94,5 @@ rules More_arguments ::= "," Expr More_arguments
 rules Bval ::= "true"
 	| "false";
 
+comment "/*" "*/" ;
+comment "%" ;
