@@ -7,34 +7,7 @@ import ParAssignment
 import ErrM
 import System.Environment
 import AbsAssignment
-
-data M_prog = M_prog ([M_decl],[M_stmt])
-           deriving (Eq,Show,Read)
-data M_decl = M_var (String,[M_expr],M_type)
-            | M_fun (String,[(String,Int,M_type)],M_type,[M_decl],[M_stmt])
-           deriving (Eq,Show,Read)
-data M_stmt = M_ass (String,[M_expr],M_expr)
-            | M_while (M_expr,M_stmt)
-            | M_cond (M_expr,M_stmt,M_stmt) 
-            | M_read (String,[M_expr])
-            | M_print M_expr
-            | M_return M_expr
-            | M_block ([M_decl],[M_stmt])
-           deriving (Eq,Show,Read)
-data M_type = M_int | M_bool | M_real 
-           deriving (Eq,Show,Read)
-data M_expr = M_ival Integer
-            | M_rval Float
-            | M_bval Bool
-            | M_size (String,Int)
-            | M_id (String,[M_expr])
-            | M_app (M_operation,[M_expr])
-           deriving (Eq,Show,Read)
-data M_operation = M_fn String | M_add | M_mul | M_sub | M_div | M_neg
-                 | M_lt | M_le | M_gt | M_ge | M_eq | M_not | M_and | M_or
-                 | M_float | M_floor | M_ceil
-           deriving (Eq,Show,Read)
-
+import AST
 				 
 type Result = Err String
 
@@ -45,65 +18,65 @@ transIdent :: Ident -> String
 transIdent x = case x of
   Ident string -> string
   
-transProg :: Prog -> M_prog
+transProg :: Prog -> M_prog String
 transProg x = case x of
   ProgBlock block -> M_prog (transBlock block)
   
-transBlock :: Block -> ([M_decl],[M_stmt])
+transBlock :: Block -> ([M_decl String],[M_stmt String])
 transBlock x = case x of
   Block1 declarations programbody -> (transDeclarations declarations, transProgram_body programbody)
   
-transDeclarations :: Declarations -> [M_decl]
+transDeclarations :: Declarations -> [M_decl String]
 transDeclarations x = case x of
   Declarations1 declaration declarations -> [transDeclaration declaration]++(transDeclarations declarations)
   Declarations2 -> []
   
-transDeclaration :: Declaration -> M_decl
+transDeclaration :: Declaration -> M_decl String
 transDeclaration x = case x of
   DeclarationVar_declaration vardeclaration -> transVar_declaration vardeclaration
   DeclarationFun_declaration fundeclaration -> transFun_declaration fundeclaration
   
-transVar_declaration :: Var_declaration -> M_decl
+transVar_declaration :: Var_declaration -> M_decl String
 transVar_declaration x = case x of
   Var_declaration1 ident arraydimensions type_ -> M_var (transIdent ident, transArray_dimensions arraydimensions, transType type_)
   
-transType :: Type -> M_type
+transType :: Type -> M_type String
 transType x = case x of
   Type_int -> M_int
   Type_real -> M_bool
   Type_bool -> M_real
   
-transArray_dimensions :: Array_dimensions -> [M_expr]
+transArray_dimensions :: Array_dimensions -> [M_expr String]
 transArray_dimensions x = case x of
   Array_dimensions1 expr arraydimensions -> [transExpr expr]++(transArray_dimensions arraydimensions)
   Array_dimensions2 -> []
   
-transFun_declaration :: Fun_declaration -> M_decl
+transFun_declaration :: Fun_declaration -> M_decl String
 transFun_declaration x = do
   case x of
     Fun_declaration1 ident paramlist type_ funblock -> do
 	  let (fbdecs, fbstmts) = transFun_block funblock
 	  M_fun (transIdent ident, transParam_list paramlist, transType type_, fbdecs, fbstmts)
   
-transFun_block :: Fun_block -> ([M_decl],[M_stmt])
+transFun_block :: Fun_block -> ([M_decl String],[M_stmt String])
 transFun_block x = case x of
   Fun_block1 declarations funbody -> (transDeclarations declarations, transFun_body funbody)
   
-transParam_list :: Param_list -> [(String,Int,M_type)]
+transParam_list :: Param_list -> [(String,Int,M_type String)]
 transParam_list x = case x of
   Param_list1 parameters -> transParameters parameters
   
-transParameters :: Parameters -> [(String,Int,M_type)]
+transParameters :: Parameters -> [(String,Int,M_type String)]
 transParameters x = case x of
   Parameters1 basicdeclaration moreparameters -> [transBasic_declaration basicdeclaration]++(transMore_parameters moreparameters)
   Parameters2 -> []
    
-transMore_parameters :: More_parameters -> [(String,Int,M_type)]
+transMore_parameters :: More_parameters -> [(String,Int,M_type String)]
 transMore_parameters x = case x of
   More_parameters1 basicdeclaration moreparameters -> [transBasic_declaration basicdeclaration]++(transMore_parameters moreparameters)
   More_parameters2 -> []
   
-transBasic_declaration :: Basic_declaration -> (String, Int, M_type)
+transBasic_declaration :: Basic_declaration -> (String, Int, M_type String)
 transBasic_declaration x = case x of
   Basic_declaration1 ident basicarraydimensions type_ -> (transIdent ident, transBasic_array_dimensions basicarraydimensions, transType type_)
   
@@ -112,20 +85,20 @@ transBasic_array_dimensions x = case x of
   Basic_array_dimensions1 basicarraydimensions -> (transBasic_array_dimensions basicarraydimensions) + 1
   Basic_array_dimensions2 -> 0
   
-transProgram_body :: Program_body -> [M_stmt]
+transProgram_body :: Program_body -> [M_stmt String]
 transProgram_body x = case x of
   Program_body1 progstmts -> transProg_stmts progstmts
   
-transFun_body :: Fun_body -> [M_stmt]
+transFun_body :: Fun_body -> [M_stmt String]
 transFun_body x = case x of
   Fun_body1 progstmts expr -> (transProg_stmts progstmts)++[M_return (transExpr expr)] 
   
-transProg_stmts :: Prog_stmts -> [M_stmt]
+transProg_stmts :: Prog_stmts -> [M_stmt String]
 transProg_stmts x = case x of
   Prog_stmts1 progstmt progstmts -> [transProg_stmt progstmt]++(transProg_stmts progstmts)
   Prog_stmts2 -> []
   
-transProg_stmt :: Prog_stmt -> M_stmt
+transProg_stmt :: Prog_stmt -> M_stmt String
 transProg_stmt x = case x of
   --if
   Prog_stmt1 expr progstmt1 progstmt2 -> M_cond (transExpr expr, transProg_stmt progstmt1, transProg_stmt progstmt2)
@@ -144,27 +117,27 @@ transProg_stmt x = case x of
   --block
   Prog_stmt6 block -> M_block (transBlock block)
   
-transIdentifier :: Identifier -> (String, [M_expr])
+transIdentifier :: Identifier -> (String, [M_expr String])
 transIdentifier x = case x of
   Identifier1 ident arraydimensions -> (transIdent ident, transArray_dimensions arraydimensions)
   
-transExpr :: Expr -> M_expr
+transExpr :: Expr -> M_expr String
 transExpr x = case x of
   Expr1 expr bintterm -> M_app (M_or, [transExpr expr, transBint_term bintterm])
   ExprBint_term bintterm -> transBint_term bintterm
   
-transBint_term :: Bint_term -> M_expr 
+transBint_term :: Bint_term -> M_expr String
 transBint_term x = case x of
   Bint_term1 bintterm bintfactor -> M_app (M_and, [transBint_term bintterm, transBint_factor bintfactor])
   Bint_termBint_factor bintfactor -> transBint_factor bintfactor
   
-transBint_factor :: Bint_factor -> M_expr
+transBint_factor :: Bint_factor -> M_expr String
 transBint_factor x = case x of
   Bint_factor1 bintfactor -> transBint_factor bintfactor
   Bint_factor2 intexpr1 compareop intexpr2 -> M_app(transCompare_op compareop, [transInt_expr intexpr1, transInt_expr intexpr2])
   Bint_factorInt_expr intexpr -> transInt_expr intexpr
   
-transCompare_op :: Compare_op -> M_operation
+transCompare_op :: Compare_op -> M_operation String
 transCompare_op x = case x of
   Compare_op1 -> M_eq
   Compare_op2 -> M_lt
@@ -172,27 +145,27 @@ transCompare_op x = case x of
   Compare_op4 -> M_le
   Compare_op5 -> M_ge
   
-transInt_expr :: Int_expr -> M_expr
+transInt_expr :: Int_expr -> M_expr String
 transInt_expr x = case x of
   Int_expr1 intexpr addop intterm -> M_app (transAddop addop, [transInt_expr intexpr, transInt_term intterm])
   Int_exprInt_term intterm -> transInt_term intterm
   
-transAddop :: Addop -> M_operation
+transAddop :: Addop -> M_operation String
 transAddop x = case x of
   Addop1 -> M_add
   Addop2 -> M_sub
   
-transInt_term :: Int_term -> M_expr
+transInt_term :: Int_term -> M_expr String
 transInt_term x = case x of
   Int_term1 intterm mulop intfactor -> M_app (transMulop mulop, [transInt_term intterm, transInt_factor intfactor])
   Int_termInt_factor intfactor -> transInt_factor intfactor
   
-transMulop :: Mulop -> M_operation
+transMulop :: Mulop -> M_operation String
 transMulop x = case x of
   Mulop1 -> M_mul
   Mulop2 -> M_div 
   
-transInt_factor :: Int_factor -> M_expr
+transInt_factor :: Int_factor -> M_expr String
 transInt_factor x = case x of
   Int_factor1 expr -> transExpr expr
   -- size   ... returns the size of the array somehow??
@@ -210,22 +183,22 @@ transInt_factor x = case x of
   Int_factorBval bval -> transBval bval
   Int_factor7 intfactor -> M_app(M_neg, [transInt_factor intfactor])
   
-transModifier_list :: Modifier_list -> [M_expr]
+transModifier_list :: Modifier_list -> [M_expr String]
 transModifier_list x = case x of
   Modifier_list1 arguments -> transArguments arguments
   Modifier_listArray_dimensions arraydimensions -> transArray_dimensions arraydimensions
   
-transArguments :: Arguments -> [M_expr]
+transArguments :: Arguments -> [M_expr String]
 transArguments x = case x of
   Arguments1 expr morearguments -> [transExpr expr]++(transMore_arguments morearguments)
   Arguments2 -> []
   
-transMore_arguments :: More_arguments -> [M_expr]
+transMore_arguments :: More_arguments -> [M_expr String]
 transMore_arguments x = case x of
   More_arguments1 expr morearguments -> [transExpr expr]++(transMore_arguments morearguments)
   More_arguments2 -> []
   
-transBval :: Bval -> M_expr
+transBval :: Bval -> M_expr String
 transBval x = case x of
   Bval_true -> M_bval True
   Bval_false -> M_bval False
