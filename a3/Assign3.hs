@@ -13,39 +13,36 @@ import SkelAssignment
 import AST
 
 instance (Out a) => Out (M_prog a) where
-  doc (M_prog (a, b)) = parens $ text "M_prog" $$ nest 2 (brackets (docList a))
-                                                    $$ nest 2 (brackets (docList b))
+  doc (M_prog (a, b)) = parens $ text "M_prog" 
+                           $$ nest 2 (brackets 
+                                          (vcat (punctuate 
+                                             (text ",") 
+                                             (map (\a ->  nest 0 (doc a)) a))))
+                           $$ nest 2 (brackets 
+                                          (vcat (punctuate 
+                                             (text ",") 
+                                             (map (\a ->  nest 0 (doc a)) b))))
   docPrec _ = doc
   
 instance (Out a) => Out (M_decl a) where
-  docList ([]) = text ""
-  docList (a:[]) = (doc a) 
-  docList (a:as) = (doc a) <+> text "," $$ (docList as)
-  doc (M_var (a, b, c)) = text "M_var (" <+> (doc a) <+> text ", "
-                                                    <+> (doc b) <+> text ", "
-                                                    <+> (doc c) <+> text ")" 
-  doc (M_fun (a, b, c, d, e)) = text "M_fun" $$ nest 2 (text "(" <+> (doc a) <+> text ", "
-                                                    <+> (doc b) <+> text ", "
-                                                    <+> (doc c) <+> text ", ")
-                                                    $$ nest 2 (brackets $ (docList d) <+> text ",")
-                                                    $$ nest 2 (brackets $ docList e)
+  doc (M_var (a, b, c)) = text "M_var" <+> (parens $ hsep (punctuate (text ",") [doc a, doc b, doc c] ))
+  doc (M_fun (a, b, c, d, e)) = text "M_fun" $$ nest 2 (parens $ (doc a) 
+                                                    <+> (doc b) 
+                                                    <+> (doc c)
+                                                    $$ nest 2 (docList d)
+                                                    $$ nest 2 (docList e))
   docPrec _ = doc
   
 instance (Out a) => Out (M_stmt a) where
-  docList ([]) = text ""
-  docList (a:[]) = (doc a) 
-  docList (a:as) = (doc a) <+> text "," $$ (docList as)
-  doc (M_ass (a, b, c))  = text "M_ass" $$ nest 2 (parens $ (doc a)
-                                                    $$ (doc b)
-                                                    $$ (doc c))
-  doc (M_while (a, b))   = text "M_while" <+> nest 2 (parens $ (doc a)
+  doc (M_ass (a, b, c))  = text "M_ass" $$ nest 2 (parens $ (vcat (punctuate (text ",") [doc a, doc b, doc c])))
+  doc (M_while (a, b))   = text "M_while" $$ nest 2 (parens $ (doc a)
                                                     $$ nest 2 (doc b))
   doc (M_cond (a, b, c)) = text "M_cond" $$ nest 2 (parens $ (doc a)
                                                     $$  (doc b))
-  doc (M_read (a, b))    = text "M_read" <+> (parens $ (doc a) <+> (doc b))
-  doc (M_print (a))      = text "M_print" <+> nest 2 (doc a)
-  doc (M_return (a))	 = text "M_return" <+> nest 2 (doc a)
-  doc (M_block (a, b))   = text "M_block" <+> nest 2 (doc a)
+  doc (M_read (a, b))    = text "M_read" $$ nest 2 (parens $ hsep (punctuate (text ",") [doc a, doc b]))
+  doc (M_print (a))      = text "M_print" $$ nest 2 (doc a)
+  doc (M_return (a))	 = text "M_return" $$ nest 2 (doc a)
+  doc (M_block (a, b))   = text "M_block" $$ nest 2 (doc a)
                                                     $$ nest 2 (doc b)
   docPrec _ = doc
 
@@ -59,13 +56,9 @@ instance (Out a) => Out (M_expr a) where
   doc (M_ival a) = text "M_ival" <+> doc a 
   doc (M_rval a) = text "M_rval" <+> doc a 
   doc (M_bval a) = text "M_bval" <+> doc a
-  doc (M_size (a,b)) = text "M_size" <+> (doc a) 
-                                                    <+> (doc b)
-  doc (M_id (a, b)) = text "M_id (" <+> (doc a) 
-                                                    <+> text ", "
-	                                                <+>  (doc b)
-	                                                <+> text ")"
-  doc (M_app (a, b)) = text "M_app" <+> (parens $ ((doc a) <+> (doc b)))
+  doc (M_size (a,b)) = text "M_size" <+> (parens $ hsep (punctuate (text ",") [doc a, doc b]))
+  doc (M_id (a, b)) = text "M_id" <+> (parens $ hsep (punctuate (text ",") [doc a, doc b]))
+  doc (M_app (a, b)) = text "M_app" <+> (parens $ hsep (punctuate (text ",") [doc a, doc b]))
   docPrec _ = doc
 
 ---------------------------------------------
