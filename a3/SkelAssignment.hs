@@ -175,7 +175,9 @@ transInt_factor x = case x of
   -- floor
   Int_factor4 expr ->  M_app (M_floor, [transExpr expr]) 
   Int_factor5 expr -> M_app (M_ceil, [transExpr expr])
-  Int_factor6 ident modifierlist -> M_id (transIdent ident, transModifier_list modifierlist)
+  Int_factor6 ident modifierlist -> case modifierlist of 
+      Modifier_list1 args -> M_app (M_fn (transIdent ident), transArguments args)
+      Modifier_listArray_dimensions dim -> M_id (transIdent ident, transArray_dimensions dim)
   Int_factorIval ival -> case ival of 
     Ival s -> M_ival (read s)
   Int_factorRval rval -> case rval of 
