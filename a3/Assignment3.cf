@@ -79,6 +79,8 @@ rules Int_factor ::= "(" Expr ")"
             | "floor" "(" Expr ")"
             | "ceil" "(" Expr ")"
             | Ident Modifier_list
+			| Ival
+			| Rval			
             | Bval
             | "-" Int_factor;
 
@@ -93,6 +95,9 @@ rules More_arguments ::= "," Expr More_arguments
 		   
 rules Bval ::= "true"
 	| "false";
+
+token Ival digit+;
+token Rval digit* '.' digit+;
 
 comment "/*" "*/" ;
 comment "%" ;

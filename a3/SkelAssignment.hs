@@ -197,6 +197,10 @@ transInt_factor x = case x of
   Int_factor4 expr ->  M_app (M_floor, [transExpr expr]) 
   Int_factor5 expr -> M_app (M_ceil, [transExpr expr])
   Int_factor6 ident modifierlist -> M_id (transIdent ident, transModifier_list modifierlist)
+  Int_factorIval ival -> case ival of 
+    Ival s -> M_ival (read s)
+  Int_factorRval rval -> case rval of 
+    Rval s -> M_rval (read s)
   Int_factorBval bval -> transBval bval
   Int_factor7 intfactor -> M_app(M_neg, [transInt_factor intfactor])
   
