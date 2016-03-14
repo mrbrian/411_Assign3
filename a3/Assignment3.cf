@@ -79,8 +79,8 @@ rules Int_factor ::= "(" Expr ")"
             | "floor" "(" Expr ")"
             | "ceil" "(" Expr ")"
             | Ident Modifier_list
-			| Ival
-			| Rval			
+            | Ival
+            | Rval			
             | Bval
             | "-" Int_factor;
 
