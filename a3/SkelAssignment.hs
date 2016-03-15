@@ -100,21 +100,21 @@ transProg_stmts x = case x of
   
 transProg_stmt :: Prog_stmt -> M_stmt String
 transProg_stmt x = case x of
-  --if
+  -- if
   Prog_stmt1 expr progstmt1 progstmt2 -> M_cond (transExpr expr, transProg_stmt progstmt1, transProg_stmt progstmt2)
-  --while
+  -- while
   Prog_stmt2 expr progstmt -> M_while (transExpr expr, transProg_stmt progstmt)
-  --read
+  -- read
   Prog_stmt3 identifier -> do
     let (id, arrexp) = transIdentifier identifier	
     M_read (id, arrexp)
-  --assign
+  -- assign
   Prog_stmt4 identifier expr -> do
     let (id, arrexp) = transIdentifier identifier
     M_ass (id, arrexp, transExpr expr)
   -- print
   Prog_stmt5 expr -> M_print (transExpr expr)
-  --block
+  -- block
   Prog_stmt6 block -> M_block (transBlock block)
   
 transIdentifier :: Identifier -> (String, [M_expr String])
@@ -168,21 +168,29 @@ transMulop x = case x of
 transInt_factor :: Int_factor -> M_expr String
 transInt_factor x = case x of
   Int_factor1 expr -> transExpr expr
-  -- size   ... returns the size of the array somehow??
+  -- size   
   Int_factor2 ident basicarraydimensions -> M_size(transIdent ident, transBasic_array_dimensions basicarraydimensions)
   -- float
   Int_factor3 expr -> M_app (M_float, [transExpr expr])
   -- floor
   Int_factor4 expr ->  M_app (M_floor, [transExpr expr]) 
+  -- ceil
   Int_factor5 expr -> M_app (M_ceil, [transExpr expr])
+  -- ident modifier_list
   Int_factor6 ident modifierlist -> case modifierlist of 
+      -- args = function call
       Modifier_list1 args -> M_app (M_fn (transIdent ident), transArguments args)
+      -- arraydimensions = variable id
       Modifier_listArray_dimensions dim -> M_id (transIdent ident, transArray_dimensions dim)
+  -- Ival
   Int_factorIval ival -> case ival of 
     Ival s -> M_ival (read s)
+  -- Rval
   Int_factorRval rval -> case rval of 
     Rval s -> M_rval (read s)
+  -- Bval
   Int_factorBval bval -> transBval bval
+  -- "-" int_factor
   Int_factor7 intfactor -> M_app(M_neg, [transInt_factor intfactor])
   
 transModifier_list :: Modifier_list -> [M_expr String]
