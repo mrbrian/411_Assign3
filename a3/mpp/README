@@ -1,0 +1,41 @@
+CPSC411 Assignment3
+Brian Yee
+00993104
+T02
+
+Description
+===========
+	Lexer/Parser
+	- generates an AST from source code
+	- requires GenericPretty library (https://hackage.haskell.org/package/GenericPretty)
+	
+Usage:
+======
+	make	
+	./Assign3 <input file>
+		
+	
+Files included:
+===============
+	README
+	Makefile
+	mpp.cf	
+	AbsMpp.hs
+	Assign3.hs
+	AST.hs
+	ErrM.hs
+	LexMpp.hs
+	ParMpp.hs
+	PrintMpp.hs
+	SkelMpp.hs
+	TestMpp.hs
+	ex1.txt
+	ex2.txt
+	ex3.txt
+	ex4.txt
+	ex5.txt
+	ex6.txt
+	
+
+	
+	
