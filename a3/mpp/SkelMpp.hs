@@ -170,7 +170,7 @@ transProg_stmt x = case x of
   Prog_stmt4 location expr -> do
     let (id, e) = transLocation location
     M_ass (id, e, transExpr expr)
-  Prog_stmt5 expr -> M_return (transExpr expr)
+  Prog_stmt5 expr -> M_print (transExpr expr)
   Prog_stmt6 block -> M_block (transBlock block)
   Prog_stmt7 expr caselist -> M_case (transExpr expr, transCase_list caselist)
   
@@ -193,7 +193,7 @@ transCase x = case x of
   
 transVar_list :: Var_list -> [String]
 transVar_list x = case x of
-  --Var_list1 varlist -> failure x
+  Var_list1 varlist -> transVar_list varlist
   Var_list2 -> []
   Var_list11 ident morevarlist -> (transIdent ident) : (transMore_var_list morevarlist)
   
@@ -255,7 +255,7 @@ transInt_factor x = case x of
   Int_factor5 expr -> M_app (M_ceil, [transExpr expr])
   Int_factor6 ident modifierlist -> case modifierlist of  
     Modifier_listFun_argument_list a -> M_app (M_fn (transIdent ident), transModifier_list modifierlist)
-    Modifier_listArray_dimensions a -> M_app (M_cid (transIdent ident), transModifier_list modifierlist)
+    Modifier_listArray_dimensions a -> M_id (transIdent ident, transModifier_list modifierlist)
   Int_factor7 cid consargumentlist -> M_app (M_cid (transCID cid), (transCons_argument_list consargumentlist))
   Int_factorIVAL ival -> M_ival (transIVAL ival)
   Int_factorRVAL rval -> M_rval (transRVAL rval)
