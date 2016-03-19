@@ -88,10 +88,9 @@ main = do
     conts <- readFile (args !! 0)
     let tok = tokens conts
     let ptree = pProg tok       
-    putStrLn "AST Tree:"
+    putStrLn "The AST Tree:\n"
     case ptree of
         Ok  tree -> do
             let ast = transProg tree
-            --putStrLn $ show ast
             pp ast
         Bad msg-> putStrLn msg

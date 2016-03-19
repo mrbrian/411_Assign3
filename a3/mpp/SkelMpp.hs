@@ -255,7 +255,7 @@ transInt_factor x = case x of
   Int_factor5 expr -> M_app (M_ceil, [transExpr expr])
   Int_factor6 ident modifierlist -> case modifierlist of  
     Modifier_listFun_argument_list a -> M_app (M_fn (transIdent ident), transModifier_list modifierlist)
-    Modifier_listArray_dimensions a -> M_app (M_cid (transIdent ident), transModifier_list modifierlist)
+    Modifier_listArray_dimensions a -> M_id (transIdent ident, transModifier_list modifierlist)
   Int_factor7 cid consargumentlist -> M_app (M_cid (transCID cid), (transCons_argument_list consargumentlist))
   Int_factorIVAL ival -> M_ival (transIVAL ival)
   Int_factorRVAL rval -> M_rval (transRVAL rval)
