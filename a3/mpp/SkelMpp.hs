@@ -170,7 +170,7 @@ transProg_stmt x = case x of
   Prog_stmt4 location expr -> do
     let (id, e) = transLocation location
     M_ass (id, e, transExpr expr)
-  Prog_stmt5 expr -> M_return (transExpr expr)
+  Prog_stmt5 expr -> M_print (transExpr expr)
   Prog_stmt6 block -> M_block (transBlock block)
   Prog_stmt7 expr caselist -> M_case (transExpr expr, transCase_list caselist)
   
@@ -193,7 +193,7 @@ transCase x = case x of
   
 transVar_list :: Var_list -> [String]
 transVar_list x = case x of
-  --Var_list1 varlist -> failure x
+  Var_list1 varlist -> transVar_list varlist
   Var_list2 -> []
   Var_list11 ident morevarlist -> (transIdent ident) : (transMore_var_list morevarlist)
   

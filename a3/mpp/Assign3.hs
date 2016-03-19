@@ -46,7 +46,7 @@ instance (Out a) => Out (M_type a) where
   doc M_bool = text "M_bool"
   doc M_real = text "M_real"
   doc M_char = text "M_bool"
-  doc (M_type a) = text "M_real"
+  doc (M_type a) = (doc a)
   docPrec _ = doc
 
 instance (Out a) => Out (M_expr a) where
@@ -88,10 +88,10 @@ main = do
     conts <- readFile (args !! 0)
     let tok = tokens conts
     let ptree = pProg tok       
-    putStrLn $ show ptree
+    putStrLn "AST Tree:"
     case ptree of
         Ok  tree -> do
             let ast = transProg tree
-            putStrLn $ show ast
+            --putStrLn $ show ast
             pp ast
         Bad msg-> putStrLn msg

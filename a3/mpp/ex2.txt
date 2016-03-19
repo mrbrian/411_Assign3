@@ -1,4 +1,5 @@
 var aaaa[2]:int;
+
 begin
 	print a;
 end
