@@ -1,0 +1,4 @@
+var a : int;
+begin
+print a;
+end
