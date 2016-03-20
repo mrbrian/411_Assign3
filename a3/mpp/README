@@ -7,7 +7,7 @@ Description
 ===========
 	Lexer/Parser
 	- generates an AST from source code
-	- requires GenericPretty library (https://hackage.haskell.org/package/GenericPretty)
+	- requires Text.Show.Pretty library (cabal install pretty-show)
 	
 Usage:
 ======
